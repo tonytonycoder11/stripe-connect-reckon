@@ -1,0 +1,59 @@
+{
+  "name": "stripe-connect-reckon",
+  "version": "0.0.0",
+  "description": "Read-only financial-risk monitor for Stripe Connect: flags negative-balance risk, failed payouts, unreconciled refunds and event gaps before they cause damage. Unofficial, not affiliated with Stripe.",
+  "keywords": [
+    "stripe",
+    "stripe-connect",
+    "payouts",
+    "reconciliation",
+    "marketplace",
+    "balance",
+    "connect"
+  ],
+  "license": "MIT",
+  "author": "TonyTonyCoder11",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.18"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tonytonycoder11/stripe-connect-reckon.git"
+  },
+  "homepage": "https://github.com/tonytonycoder11/stripe-connect-reckon#readme",
+  "bugs": {
+    "url": "https://github.com/tonytonycoder11/stripe-connect-reckon/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.1",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3",
+    "vitest": "^3.2.6"
+  }
+}
