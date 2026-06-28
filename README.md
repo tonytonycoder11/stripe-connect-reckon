@@ -46,10 +46,13 @@ be a deliberate decision, not an incremental feature.
 
 The detection core is implemented and tested: the domain model, the four detectors, and
 the `runDetectors` engine all run today against plain data, with no network access. The
-read-only Stripe adapter and the top-level `reconcile()` entry point — which fetch live
-data in test mode and feed the core — are the next milestone (see [Roadmap](#roadmap)).
+read-only Stripe adapter and the top-level `reconcile()` entry point — which fetch data
+and feed the core — are implemented and unit-tested against a stubbed client. A text
+renderer for the report and helper tooling round out the next milestone (see
+[Roadmap](#roadmap)).
 
-If you already have balance, payout, or event data in hand, the core is usable now.
+If you already hold balance, payout, or event data, the core is usable directly;
+otherwise `reconcile()` collects it for you.
 
 ## Install
 
@@ -127,30 +130,39 @@ const issues = runDetectors({
 });
 ```
 
-## Roadmap
+## Connecting to Stripe
 
-The intended high-level surface wires the read-only Stripe adapter to the core, so most
-users never assemble the input by hand:
+`reconcile()` wires the read-only Stripe adapter to the core, so you don't assemble the
+input by hand. Give it a secret key and the accounts to inspect; it reads balances and
+payouts (and, when you pass `knownState`, refunds and events), runs detection, and
+returns a structured `Report`.
 
 ```ts
-// Planned — not yet shipped.
 import { reconcile } from 'stripe-connect-reckon';
 
 const report = await reconcile({
-  secretKey: process.env.STRIPE_SECRET_KEY, // test mode
+  secretKey: process.env.STRIPE_SECRET_KEY!, // use a test-mode key (sk_test_...)
   accounts: ['acct_123', 'acct_456'],
-  knownState: { processedRefundIds, processedEventIds },
+  knownState: { processedRefundIds, processedEventIds }, // optional
 });
 
 console.log(report.summary); // { critical, warning, info }
-report.issues.forEach((i) => console.log(i.message));
+report.issues.forEach((i) => console.log(`[${i.severity}] ${i.type} — ${i.message}`));
 ```
 
-- **Next:** read-only Stripe adapter (`balance.retrieve`, `payouts.list`, `events.list`)
-  pinned to stripe-node v22 and API version `2026-06-24.dahlia`, with pagination and the
-  `Stripe-Account` header handled for you.
-- **Then:** a structured `Report` plus a text renderer, a README example you can paste,
-  and a synthetic data generator to try it without a real account.
+The client is pinned to stripe-node v22 and API version `2026-06-24.dahlia`. The
+`Stripe-Account` header, pagination, and the 30-day event window are handled for you.
+Balances and payouts are read on every run; refunds and events are fetched only when
+`knownState` gives the corresponding detectors something to compare against. Lookups
+default to the last 30 days and can be narrowed with `window`.
+
+## Roadmap
+
+- A text renderer for `Report`, for readable logs and CI output next to the structured
+  object.
+- A synthetic data generator, to exercise the detectors without a Stripe account.
+- Optional per-account liability enrichment (`losses_collector` /
+  `debit_negative_balances`) to sharpen severity for platform-liable accounts.
 
 ## API
 
@@ -182,6 +194,36 @@ interface Issue {
 The individual detectors — `detectNegativeBalance`, `detectFailedPayouts`,
 `detectUnreconciledRefunds`, `detectEventGaps` — are exported too, if you want to run one
 in isolation or compose your own pipeline.
+
+### `reconcile(config, deps?): Promise<Report>`
+
+Fetches data through the read-only Stripe adapter and runs detection.
+
+```ts
+interface ReconcileConfig {
+  secretKey: string;            // test-mode key in v0
+  accounts: string[];           // acct_... to inspect
+  apiVersion?: string;          // defaults to 2026-06-24.dahlia
+  thresholds?: ReconcileThresholds;
+  knownState?: AppState;        // enables UNRECONCILED_REFUND / EVENT_GAP
+  window?: { since?: Date; until?: Date }; // defaults to the last 30 days
+  maxItemsPerList?: number;     // pagination cap, default 1000
+  relevantEventTypes?: string[];
+}
+
+interface Report {
+  generatedAt: string;          // ISO-8601
+  livemode: boolean;
+  accountsChecked: string[];
+  issues: Issue[];
+  summary: { critical: number; warning: number; info: number };
+}
+```
+
+`deps` is for testing: pass `{ dataSource }` to inject a fake `ReconcileDataSource` and
+skip the network entirely. The Stripe-backed source is also exported as
+`createStripeDataSource(stripe, options)` if you want to supply your own configured
+client.
 
 ### Thresholds
 
