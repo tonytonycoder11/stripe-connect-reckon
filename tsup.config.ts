@@ -7,7 +7,9 @@ export default defineConfig({
   format: ['esm', 'cjs'],
   dts: true,
   clean: true,
-  sourcemap: true,
+  // No source maps in the published package: they would re-embed the full TS
+  // source (the repo deliberately ships only the build) and nearly double size.
+  sourcemap: false,
   target: 'node24',
   outExtension({ format }) {
     return { js: format === 'cjs' ? '.cjs' : '.js' };

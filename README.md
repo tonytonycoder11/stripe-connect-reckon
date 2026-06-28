@@ -145,7 +145,8 @@ import { reconcile } from 'stripe-connect-reckon';
 const report = await reconcile({
   secretKey: process.env.STRIPE_SECRET_KEY!, // use a test-mode key (sk_test_...)
   accounts: ['acct_123', 'acct_456'],
-  knownState: { processedRefundIds, processedEventIds }, // optional
+  // optional: the refund/event ids your app has already processed
+  knownState: { processedRefundIds: [], processedEventIds: [] },
 });
 
 console.log(report.summary); // { critical, warning, info }
@@ -167,7 +168,10 @@ next section.
 ```ts
 import { reconcile, renderReport } from 'stripe-connect-reckon';
 
-const report = await reconcile({ secretKey: process.env.STRIPE_SECRET_KEY!, accounts });
+const report = await reconcile({
+  secretKey: process.env.STRIPE_SECRET_KEY!,
+  accounts: ['acct_123'],
+});
 console.log(renderReport(report));
 ```
 
@@ -347,6 +351,12 @@ Worth knowing before you rely on it:
 - Balances are per currency. Amounts in different currencies are never combined.
 - Inspecting many connected accounts is one set of API calls per account; large platforms
   will want throttling, which the adapter will handle.
+
+## Versioning
+
+This is **v0** (pre-1.0). The read-only guarantee is fixed and intentional, but the public
+API may change between minor versions until 1.0. Changes are recorded in
+[CHANGELOG.md](./CHANGELOG.md).
 
 ## License
 
