@@ -16,10 +16,12 @@ export type { ReconcileConfig, ReconcileDeps } from './reconcile';
 // Data-source port (implemented by the Stripe adapter or by a fake in tests).
 export type { ReconcileDataSource, TimeWindow } from './dataSource';
 
-// Structured report.
+// Structured report + text renderer.
 export { buildReport } from './report/buildReport';
 export type { ReportMeta } from './report/buildReport';
 export type { Report, ReportSummary } from './report/types';
+export { renderReport } from './report/renderText';
+export type { RenderOptions } from './report/renderText';
 
 // Read-only Stripe adapter.
 export { createStripeClient, DEFAULT_API_VERSION } from './stripe/client';

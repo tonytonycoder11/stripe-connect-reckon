@@ -44,12 +44,14 @@ be a deliberate decision, not an incremental feature.
 
 ## Project status
 
-The detection core is implemented and tested: the domain model, the four detectors, and
-the `runDetectors` engine all run today against plain data, with no network access. The
-read-only Stripe adapter and the top-level `reconcile()` entry point — which fetch data
-and feed the core — are implemented and unit-tested against a stubbed client. A text
-renderer for the report and helper tooling round out the next milestone (see
-[Roadmap](#roadmap)).
+The detection core, the read-only Stripe adapter and `reconcile()`, the structured report
+with a text renderer, and a synthetic dataset for offline trials are all implemented and
+tested (47 tests, no network in the suite). What remains is polish, not core capability
+(see [Roadmap](#roadmap)).
+
+The one thing not yet exercised here is a run against a real Stripe account: the adapter
+is unit-tested against a stubbed client, so a live test-mode pass with your own
+`sk_test_` key is the natural next check on your side.
 
 If you already hold balance, payout, or event data, the core is usable directly;
 otherwise `reconcile()` collects it for you.
@@ -156,13 +158,66 @@ Balances and payouts are read on every run; refunds and events are fetched only 
 `knownState` gives the corresponding detectors something to compare against. Lookups
 default to the last 30 days and can be narrowed with `window`.
 
+## Rendering a report
+
+`renderReport(report)` turns a `Report` into readable text for logs or CI output. Pass
+`{ color: true }` for ANSI-colored severities in a terminal. A full sample is shown in the
+next section.
+
+```ts
+import { reconcile, renderReport } from 'stripe-connect-reckon';
+
+const report = await reconcile({ secretKey: process.env.STRIPE_SECRET_KEY!, accounts });
+console.log(renderReport(report));
+```
+
+## Try it without a Stripe account
+
+The `stripe-connect-reckon/synthetic` subpath ships a dataset that triggers every issue
+type, plus a fake data source, so you can run the whole flow offline.
+
+```ts
+import { reconcile, renderReport } from 'stripe-connect-reckon';
+import {
+  syntheticDataSource,
+  syntheticAppState,
+  SYNTHETIC_ACCOUNTS,
+} from 'stripe-connect-reckon/synthetic';
+
+const report = await reconcile(
+  { secretKey: 'sk_test_demo', accounts: [...SYNTHETIC_ACCOUNTS], knownState: syntheticAppState() },
+  { dataSource: syntheticDataSource() },
+);
+console.log(renderReport(report));
+```
+
+```text
+stripe-connect-reckon report
+Generated 2026-06-29T00:00:00.000Z  ·  mode: test  ·  accounts: 3
+Summary: 3 critical, 2 warning, 0 info
+
+CRITICAL
+  ✗ EVENT_GAP  acct_payouts
+    Stripe emitted a payout.failed event (evt_missed) that the application has not processed for connected account acct_payouts.
+  ✗ FAILED_PAYOUT  acct_payouts
+    Payout po_failed of $500.00 on connected account acct_payouts FAILED (account_closed). The funds did not reach the bank account. Reason: The bank account has been closed.
+  ✗ NEGATIVE_BALANCE_RISK  acct_negative
+    Available balance is -$32.00 (negative) on connected account acct_negative. While negative, Stripe suspends payouts for this account and refunds may be blocked. The platform is liable for this negative balance.
+
+WARNING
+  ! FAILED_PAYOUT  acct_payouts
+    Payout po_canceled of $120.00 on connected account acct_payouts was canceled.
+  ! UNRECONCILED_REFUND  acct_payouts
+    Refund re_orphan ($45.00) exists on Stripe but is not in the application's processed-refunds state for connected account acct_payouts.
+```
+
+Or feed the core directly with `runDetectors(syntheticInput())`.
+
 ## Roadmap
 
-- A text renderer for `Report`, for readable logs and CI output next to the structured
-  object.
-- A synthetic data generator, to exercise the detectors without a Stripe account.
 - Optional per-account liability enrichment (`losses_collector` /
   `debit_negative_balances`) to sharpen severity for platform-liable accounts.
+- Concurrency with throttling for platforms that inspect many connected accounts.
 
 ## API
 
@@ -252,7 +307,9 @@ interface AppState {
 }
 ```
 
-Also exported: `DEFAULT_RELEVANT_EVENT_TYPES`, `CRITICAL_EVENT_TYPES`, and `formatMoney`.
+Also exported: `renderReport`, `buildReport`, `createStripeDataSource`,
+`DEFAULT_RELEVANT_EVENT_TYPES`, `CRITICAL_EVENT_TYPES`, and `formatMoney`. The synthetic
+helpers live under `stripe-connect-reckon/synthetic`.
 
 ## How the detectors map to Stripe
 

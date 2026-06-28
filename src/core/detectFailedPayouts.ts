@@ -23,10 +23,14 @@ export function detectFailedPayouts(payouts: PayoutRecord[]): Issue[] {
     let message: string;
     if (payout.status === 'failed') {
       const code = payout.failureCode ? ` (${payout.failureCode})` : '';
-      const reason = payout.failureMessage ? `: ${payout.failureMessage}` : '';
       message =
         `Payout ${payout.id} of ${amount} on connected account ${payout.accountId} ` +
-        `FAILED${code}${reason}. The funds did not reach the bank account.`;
+        `FAILED${code}. The funds did not reach the bank account.`;
+      if (payout.failureMessage) {
+        // Append the reason as its own sentence, trimming a trailing period so we
+        // never produce a doubled "..".
+        message += ` Reason: ${payout.failureMessage.trim().replace(/\.$/, '')}.`;
+      }
     } else {
       message =
         `Payout ${payout.id} of ${amount} on connected account ${payout.accountId} was canceled.`;

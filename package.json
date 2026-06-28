@@ -22,6 +22,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./synthetic": {
+      "types": "./dist/synthetic.d.ts",
+      "import": "./dist/synthetic.js",
+      "require": "./dist/synthetic.cjs"
     }
   },
   "files": [
