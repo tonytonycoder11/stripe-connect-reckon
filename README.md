@@ -1,7 +1,7 @@
 # stripe-connect-reckon
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
-[![Node](https://img.shields.io/badge/node-%3E%3D18.18-339933.svg)](https://nodejs.org)
+[![Node](https://img.shields.io/badge/node-%3E%3D24-339933.svg)](https://nodejs.org)
 [![Status](https://img.shields.io/badge/status-early%20development-orange.svg)](#project-status)
 
 A read-only safety net for Stripe Connect marketplaces. It watches the balances and
@@ -57,7 +57,7 @@ If you already have balance, payout, or event data in hand, the core is usable n
 npm install stripe-connect-reckon
 ```
 
-Requires Node.js 18.18 or newer. Ships both ESM and CommonJS builds with type
+Requires Node.js 24 or newer. Ships both ESM and CommonJS builds with type
 declarations.
 
 ## Quick start
