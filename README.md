@@ -1,8 +1,9 @@
 # stripe-connect-reckon
 
+[![npm version](https://img.shields.io/npm/v/stripe-connect-reckon.svg)](https://www.npmjs.com/package/stripe-connect-reckon)
+[![npm downloads](https://img.shields.io/npm/dm/stripe-connect-reckon.svg)](https://www.npmjs.com/package/stripe-connect-reckon)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E%3D24-339933.svg)](https://nodejs.org)
-[![Status](https://img.shields.io/badge/status-early%20development-orange.svg)](#project-status)
 
 A read-only safety net for Stripe Connect marketplaces. It watches the balances and
 payouts of your connected accounts and surfaces the financial conditions that quietly
