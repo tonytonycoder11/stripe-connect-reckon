@@ -50,9 +50,11 @@ with a text renderer, and a synthetic dataset for offline trials are all impleme
 tested (47 tests, no network in the suite). What remains is polish, not core capability
 (see [Roadmap](#roadmap)).
 
-The one thing not yet exercised here is a run against a real Stripe account: the adapter
-is unit-tested against a stubbed client, so a live test-mode pass with your own
-`sk_test_` key is the natural next check on your side.
+It has been verified end-to-end against a live Stripe **test-mode** account:
+authentication and the pinned API version, the read-only reads (`balance`, `payouts`,
+`events`, `refunds`, including the per-account `Stripe-Account` path), detection, and
+report rendering all work against the real API. The detectors are also covered by unit
+tests against synthetic fixtures and a stubbed client.
 
 If you already hold balance, payout, or event data, the core is usable directly;
 otherwise `reconcile()` collects it for you.
