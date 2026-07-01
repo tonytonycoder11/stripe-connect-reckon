@@ -7,6 +7,15 @@ All notable changes to this project are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-07-01
+
+### Changed
+
+- README: added npm version and downloads badges.
+- README: documented end-to-end verification against a live Stripe test-mode account.
+
+No changes to the library's code or behavior.
+
 ## [0.1.0] - 2026-06-29
 
 Initial release.
@@ -26,5 +35,6 @@ Initial release.
 
 - Read-only by design: the library never writes to Stripe in v0.
 
-[Unreleased]: https://github.com/tonytonycoder11/stripe-connect-reckon/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/tonytonycoder11/stripe-connect-reckon/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/tonytonycoder11/stripe-connect-reckon/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/tonytonycoder11/stripe-connect-reckon/releases/tag/v0.1.0
