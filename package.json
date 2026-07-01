@@ -1,6 +1,6 @@
 {
   "name": "stripe-connect-reckon",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read-only financial-risk monitor for Stripe Connect: flags negative-balance risk, failed payouts, unreconciled refunds and event gaps before they cause damage. Unofficial, not affiliated with Stripe.",
   "keywords": [
     "stripe",
