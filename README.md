@@ -361,6 +361,15 @@ This is **v0** (pre-1.0). The read-only guarantee is fixed and intentional, but 
 API may change between minor versions until 1.0. Changes are recorded in
 [CHANGELOG.md](./CHANGELOG.md).
 
+## Support
+
+If this project is useful to you, you can support its development:
+
+[![GitHub Sponsors](https://img.shields.io/badge/GitHub%20Sponsors-EA4AAA?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/tonytonycoder11)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?logo=buymeacoffee&logoColor=black)](https://www.buymeacoffee.com/tonytonycoder)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-FF5E5B?logo=kofi&logoColor=white)](https://ko-fi.com/tonytonycoder)
+[![PayPal](https://img.shields.io/badge/PayPal-00457C?logo=paypal&logoColor=white)](https://www.paypal.com/paypalme/nacode11)
+
 ## License
 
 [MIT](./LICENSE)
